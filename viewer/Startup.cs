@@ -6,6 +6,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using viewer.Hubs;
 
+using Microsoft.Azure; // Namespace for CloudConfigurationManager
+using Microsoft.Azure.Storage; // Namespace for CloudStorageAccount
+using Microsoft.Azure.Storage.Queue; // Namespace for Queue storage types
+
 namespace viewer
 {
     public class Startup
@@ -62,6 +66,26 @@ namespace viewer
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private void ConfigureQueue(IApplicationBuilder app, IHostingEnvironment env)
+        {
+            // Retrieve storage account from connection string.
+            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=stgaccprivateendpoint;AccountKey=YGQ7LP81FSOZnQm3RNxv6UeAI+O+EEHyNQpTem0Rh/83N/q6T4ZSki4RQbaS8Mv+judJiUs9Z69pIls0BnCZeg==;EndpointSuffix=core.windows.net");
+
+            // Create the queue client.
+            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+
+            // Retrieve a reference to a container.
+            CloudQueue queue = queueClient.GetQueueReference("blobupload");
+
+            // Create the queue if it doesn't already exist
+            queue.CreateIfNotExists();
+
+            // Peek at the next message
+            CloudQueueMessage retrievedMessage = await queue.GetMessageAsync();
+            Console.WriteLine("Retrieved message with content '{0}'", retrievedMessage.AsString);
+
         }
     }
 }
