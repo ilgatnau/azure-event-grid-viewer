@@ -32,7 +32,7 @@ namespace viewer
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>();
                 
-        private void ConfigureQueue()
+        private static void ConfigureQueue()
         {
             traceMessage("Connecting to queue");
 
@@ -74,7 +74,7 @@ namespace viewer
             
         }
 
-        private void traceMessage(string message) {
+        private static void traceMessage(string message) {
             Console.WriteLine(message);
             Trace.WriteLine(message);
         }
