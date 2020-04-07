@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Diagnostics.Trace
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -90,6 +91,7 @@ namespace viewer
 
             // Display message.
             Console.WriteLine(peekedMessage.AsString);
+            Trace.WriteLine(peekedMessage.AsString);
 
             CloudQueueMessage message = queue.GetMessage();
 
