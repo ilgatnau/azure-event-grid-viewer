@@ -38,6 +38,27 @@ namespace viewer.Controllers
             ConfigureQueue();
         }
 
+        [HttpOptions]
+        public async Task<IActionResult> Options()
+        {
+            using (var reader = new StreamReader(Request.Body, Encoding.UTF8))
+            {
+                var webhookRequestOrigin = HttpContext.Request.Headers["WebHook-Request-Origin"].FirstOrDefault();
+                var webhookRequestCallback = HttpContext.Request.Headers["WebHook-Request-Callback"];
+                var webhookRequestRate = HttpContext.Request.Headers["WebHook-Request-Rate"];
+                HttpContext.Response.Headers.Add("WebHook-Allowed-Rate", "*");
+                HttpContext.Response.Headers.Add("WebHook-Allowed-Origin", webhookRequestOrigin);
+            }
+
+            return Ok();
+        }
+
+        [HttpGet]
+        public string Get()
+        {
+            return "true";
+        }
+
         private static void ConfigureQueue()
         {
             traceMessage("Connecting to queue");
