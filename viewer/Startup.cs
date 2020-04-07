@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Text;
-using System.Diagnostics.Trace
+using System.Diagnostics.Trace;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
