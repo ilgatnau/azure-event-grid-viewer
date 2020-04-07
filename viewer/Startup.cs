@@ -90,6 +90,13 @@ namespace viewer
 
             // Display message.
             Console.WriteLine(peekedMessage.AsString);
+
+            message = queue.GetMessage();
+
+            message.SetMessageContent2("Updated contents.", false);
+            queue.UpdateMessage(message,
+                    TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
+                    MessageUpdateFields.Content | MessageUpdateFields.Visibility);
         }
     }
 }
