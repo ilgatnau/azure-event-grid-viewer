@@ -91,7 +91,7 @@ namespace viewer
             // Display message.
             Console.WriteLine(peekedMessage.AsString);
 
-            message = queue.GetMessage();
+            CloudQueueMessage message = queue.GetMessage();
 
             message.SetMessageContent2("Updated contents.", false);
             queue.UpdateMessage(message,
