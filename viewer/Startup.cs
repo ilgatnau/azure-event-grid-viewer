@@ -41,7 +41,7 @@ namespace viewer
             services.AddSignalR();
 
 
-            traceMessage("Before configuring queue");
+            //traceMessage("Before configuring queue");
             //ConfigureQueue();
         }
 
@@ -103,11 +103,12 @@ namespace viewer
                 traceMessage(peekedMessage.AsString);
 
                 CloudQueueMessage message = queue.GetMessage();
+                queue.DeleteMessage(message);
 
-                message.SetMessageContent2("Updated contents.", false);
-                queue.UpdateMessage(message,
-                        TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
-                        MessageUpdateFields.Content | MessageUpdateFields.Visibility);
+                //message.SetMessageContent2("Updated contents.", false);
+                //queue.UpdateMessage(message,
+                //        TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
+                //        MessageUpdateFields.Content | MessageUpdateFields.Visibility);
             }
             catch (Exception e)
             {
