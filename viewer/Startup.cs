@@ -109,7 +109,7 @@ namespace viewer
                         TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
                         MessageUpdateFields.Content | MessageUpdateFields.Visibility);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 Trace.WriteLine(e);
                 Console.WriteLine(e);
