@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Text;
+
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -83,9 +86,10 @@ namespace viewer
             queue.CreateIfNotExists();
 
             // Peek at the next message
-            CloudQueueMessage retrievedMessage = await queue.GetMessageAsync();
-            Console.WriteLine("Retrieved message with content '{0}'", retrievedMessage.AsString);
+            CloudQueueMessage peekedMessage = queue.PeekMessage();
 
+            // Display message.
+            Console.WriteLine(peekedMessage.AsString);
         }
     }
 }
