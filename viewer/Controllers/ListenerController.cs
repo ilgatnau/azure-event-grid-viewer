@@ -26,6 +26,7 @@ using Microsoft.Azure.Storage.Queue; // Namespace for Queue storage types
 
 namespace viewer.Controllers
 {
+    [Route("api/readqueue")]
     public class ListenerController : Controller
     {
         private readonly IHubContext<GridEventsHub> _hubContext;
@@ -34,8 +35,8 @@ namespace viewer.Controllers
         {
             this._hubContext = gridEventsHubContext;
             
-            traceMessage("Before configuring queue");
-            ConfigureQueue();
+            //traceMessage("Before configuring queue");
+            //ConfigureQueue();
         }
 
         [HttpOptions]
@@ -56,10 +57,11 @@ namespace viewer.Controllers
         [HttpGet]
         public string Get()
         {
-            return "true";
+            var message = ReadAndDeleteFromQueue();
+            return message;
         }
 
-        private static void ConfigureQueue()
+        private static string ReadAndDeleteFromQueue()
         {
             traceMessage("Connecting to queue");
 
@@ -82,7 +84,13 @@ namespace viewer.Controllers
                 int currentBackoff = 0;
                 int maximumBackoff = 10;
 
-                while (true)
+                var message = queue.GetMessage();
+
+                string messageStr = message.AsString;
+
+                queue.DeleteMessage(message);
+
+                /*while (true)
                 {
                     var message = queue.GetMessage();
                     if (message != null)
@@ -107,12 +115,16 @@ namespace viewer.Controllers
                         Console.WriteLine("Backing off for {0} seconds...", currentBackoff);
                         Thread.Sleep(TimeSpan.FromSeconds(currentBackoff));
                     }
-                }
+                }*/
+
+                return messageStr;
             }
             catch (Exception e)
             {
                 Trace.WriteLine(e);
                 Console.WriteLine(e);
+
+                return "error";
             }
 
             
