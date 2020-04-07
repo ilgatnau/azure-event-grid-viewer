@@ -39,6 +39,10 @@ namespace viewer
 
             // Awwww yeah!
             services.AddSignalR();
+
+
+            traceMessage("Before configuring queue");
+            ConfigureQueue();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,33 +76,51 @@ namespace viewer
             });
         }
 
-        private void ConfigureQueue(IApplicationBuilder app, IHostingEnvironment env)
+        private void ConfigureQueue()
         {
-            // Retrieve storage account from connection string.
-            CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=stgaccprivateendpoint;AccountKey=YGQ7LP81FSOZnQm3RNxv6UeAI+O+EEHyNQpTem0Rh/83N/q6T4ZSki4RQbaS8Mv+judJiUs9Z69pIls0BnCZeg==;EndpointSuffix=core.windows.net");
+            traceMessage("Connecting to queue");
 
-            // Create the queue client.
-            CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
+            try
+            {
+                // Retrieve storage account from connection string.
+                CloudStorageAccount storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=stgaccprivateendpoint;AccountKey=YGQ7LP81FSOZnQm3RNxv6UeAI+O+EEHyNQpTem0Rh/83N/q6T4ZSki4RQbaS8Mv+judJiUs9Z69pIls0BnCZeg==;EndpointSuffix=core.windows.net");
 
-            // Retrieve a reference to a container.
-            CloudQueue queue = queueClient.GetQueueReference("blobupload");
+                // Create the queue client.
+                CloudQueueClient queueClient = storageAccount.CreateCloudQueueClient();
 
-            // Create the queue if it doesn't already exist
-            queue.CreateIfNotExists();
+                // Retrieve a reference to a container.
+                CloudQueue queue = queueClient.GetQueueReference("blobupload");
 
-            // Peek at the next message
-            CloudQueueMessage peekedMessage = queue.PeekMessage();
+                traceMessage("Adquired queue");
 
-            // Display message.
-            Console.WriteLine(peekedMessage.AsString);
-            Trace.WriteLine(peekedMessage.AsString);
+                // Create the queue if it doesn't already exist
+                queue.CreateIfNotExists();
 
-            CloudQueueMessage message = queue.GetMessage();
+                // Peek at the next message
+                CloudQueueMessage peekedMessage = queue.PeekMessage();
 
-            message.SetMessageContent2("Updated contents.", false);
-            queue.UpdateMessage(message,
-                    TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
-                    MessageUpdateFields.Content | MessageUpdateFields.Visibility);
+                // Display message.
+                traceMessage(peekedMessage.AsString);
+
+                CloudQueueMessage message = queue.GetMessage();
+
+                message.SetMessageContent2("Updated contents.", false);
+                queue.UpdateMessage(message,
+                        TimeSpan.FromSeconds(60.0),  // Make it invisible for another 60 seconds.
+                        MessageUpdateFields.Content | MessageUpdateFields.Visibility);
+            }
+            catch (Exception)
+            {
+                Trace.WriteLine(e);
+                Console.WriteLine(e);
+            }
+
+            
+        }
+
+        private void traceMessage(string message) {
+            Console.WriteLine(message);
+            Trace.WriteLine(message);
         }
     }
 }
